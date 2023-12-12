@@ -1,4 +1,4 @@
-const User = require("../models/userModel");
+const User = require("../models/userModel2");
 
 // const getUsers = async (req, res) => {
 //   try {
@@ -10,23 +10,22 @@ const User = require("../models/userModel");
 // };
 
 const getUsers = async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skipIndex = (page - 1) * limit;
-
   try {
-    const users = await User.find()
-      .sort({ _id: 1 })
-      .limit(limit)
-      .skip(skipIndex)
-      .exec();
+    const filter = {};
+    if (req.query.name) {
+      // filter.name = req.query.name;
+      filter.name = new RegExp(req.query.name, "i");
+    }
+    if (req.query.age) {
+      filter.age = req.query.age;
+    }
+    if (req.query.city) {
+      // filter.city = req.query.city;
+      filter.city = new RegExp(req.query.city, "i");
+    }
 
-    const totalUsers = await User.countDocuments();
-    const totalPages = Math.ceil(totalUsers / limit);
-
-    res
-      .status(200)
-      .json({ data: users, count: totalUsers, totalPages, currentPage: page });
+    const users = await User.find(filter);
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -41,4 +40,14 @@ const createUsers = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, createUsers };
+const getOptions = async (req, res) => {
+  try {
+    const ageOptions = await User.find().distinct("age");
+    const cityOptions = await User.find().distinct("city");
+    res.json({ ages: ageOptions, cities: cityOptions });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getUsers, createUsers, getOptions };

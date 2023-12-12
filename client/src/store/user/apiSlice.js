@@ -4,10 +4,22 @@ export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: "/api" }),
   endpoints: (builder) => ({
+    // getUsers: builder.query({
+    //   query: () => {
+    //     return `users`;
+    //   },
+    // }),
+
     getUsers: builder.query({
-      query: ({ page, limit }) => `users?page=${page}&limit=${limit}`,
+      query: (queryArg = {}) => {
+        const query = new URLSearchParams(queryArg).toString();
+        return `users?${query}`;
+      },
+    }),
+    getOptions: builder.query({
+      query: () => "users/options",
     }),
   }),
 });
 
-export const { useGetUsersQuery } = userApi;
+export const { useGetUsersQuery, useGetOptionsQuery } = userApi;

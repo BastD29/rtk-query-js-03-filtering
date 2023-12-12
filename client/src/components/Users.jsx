@@ -1,30 +1,41 @@
 import { useState } from "react";
-import { useGetUsersQuery } from "../store/user/apiSlice";
-import { Pagination } from "./Pagination";
+import { useGetUsersQuery, useGetOptionsQuery } from "../store/user/apiSlice";
+import { Filter } from "./Filter";
 
 const Users = () => {
-  const [page, setPage] = useState(1);
+  const [filter, setFilter] = useState({});
+  console.log("filter:", filter);
   const {
     data: users,
-    error,
-    isLoading,
-  } = useGetUsersQuery({ page, limit: 5 });
+    error: userError,
+    isLoading: userLoading,
+  } = useGetUsersQuery(filter);
+  const {
+    data: options,
+    error: optionError,
+    isLoading: optionLoading,
+  } = useGetOptionsQuery();
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error occurred: {error.toString()}</div>;
+  console.log("options:", options);
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
+  if (userLoading) return <div>Loading...</div>;
+  if (userError) return <div>Error occurred: {error.toString()}</div>;
+
+  const handleInputChange = (e) => {
+    setFilter({
+      ...filter,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return (
     <>
+      <Filter onInputChange={handleInputChange} options={options} />
       <div>
-        {users.data.map((user) => (
+        {users.map((user) => (
           <div key={user._id}>{user.name}</div>
         ))}
       </div>
-      <Pagination currentPage={page} onPageChange={handlePageChange} />
     </>
   );
 };

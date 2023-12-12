@@ -7,6 +7,9 @@ const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(userApi.middleware),
+  // getDefaultMiddleware({ serializableCheck: false }).concat(
+  //   userApi.middleware
+  // ),
 });
 
 export { store };
