@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useGetUsersQuery, useGetOptionsQuery } from "../store/user/apiSlice";
 import { Filter } from "./Filter";
+import UsersList from "./UsersList";
 
 const Users = () => {
   const [filter, setFilter] = useState({});
@@ -31,11 +32,7 @@ const Users = () => {
   return (
     <>
       <Filter onInputChange={handleInputChange} options={options} />
-      <div>
-        {users.map((user) => (
-          <div key={user._id}>{user.name}</div>
-        ))}
-      </div>
+      <UsersList users={users} />
     </>
   );
 };
